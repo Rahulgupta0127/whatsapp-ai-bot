@@ -1,11 +1,11 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const axios = require('axios');
-const puppeteer = require('puppeteer');
 
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
+        executablePath: '/usr/bin/chromium',
         headless: true,
         args: [
             '--no-sandbox',
@@ -15,7 +15,6 @@ const client = new Client({
         ]
     }
 });
-
 client.on('qr', (qr) => {
     console.log('Scan QR below:');
     qrcode.generate(qr, { small: true });

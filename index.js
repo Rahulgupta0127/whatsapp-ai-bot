@@ -1,11 +1,18 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const axios = require('axios');
+const puppeteer = require('puppeteer');
 
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        headless: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu'
+        ]
     }
 });
 
@@ -21,20 +28,14 @@ client.on('ready', () => {
 client.on('message', async (message) => {
     const msg = message.body.toLowerCase();
 
-    // FAQ replies
     if (msg.includes('price')) {
         return message.reply('Price starts from ₹999 😊');
     }
 
     if (msg.includes('booking')) {
-        return message.reply('Please share date & number of guests 📅');
+        return message.reply('Please share date & guests 📅');
     }
 
-    if (msg.includes('hi') || msg.includes('hello')) {
-        return message.reply('Hey 😊 Welcome! How can I help you today?');
-    }
-
-    // AI reply
     try {
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
             model: "gpt-3.5-turbo",
@@ -52,8 +53,8 @@ client.on('message', async (message) => {
             message.reply(reply);
         }, 2000);
 
-    } catch (error) {
-        message.reply("Thanks 😊 We'll reply shortly.");
+    } catch (err) {
+        message.reply("Thanks 😊 We'll reply soon.");
     }
 });
 
